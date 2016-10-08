@@ -12,6 +12,27 @@ class SetoranTest(unittest.TestCase):
     def setUp(self):
         # db.disconnect()
         db.create_tables()
+        with db_session:
+            raffi = Santri(nama='raffi')
+            suryadi = Santri(nama='suryadi')
+            kholis = Santri(nama='kholis')
+            farhan = Santri(nama='farhan')
+            iqbal = Santri(nama='iqbal')
+            wildan = Santri(nama='wildan')
+            Setoran(start='1/1', end='1/7', jenis='murojaah',
+                    timestamp=datetime.now(), lulus=True, santri=wildan)
+            Setoran(start='1/1', end='1/7', jenis='tambah',
+                    timestamp=datetime.now(), lulus=True, santri=wildan)
+            Setoran(start='1/1', end='1/7', jenis='murojaah',
+                    timestamp=datetime.now(), lulus=False, santri=iqbal)
+            Setoran(start='1/1', end='1/7', jenis='tambah',
+                    timestamp=datetime.now(), lulus=True, santri=farhan)
+            Setoran(start='1/1', end='1/7', jenis='murojaah',
+                    timestamp=datetime.now(), lulus=True, santri=kholis)
+            Setoran(start='1/1', end='1/7', jenis='tambah',
+                    timestamp=datetime.now(), lulus=True, santri=farhan)
+            commit()
+
 
     def tearDown(self):
         db.drop_all_tables(with_all_data=True)
@@ -68,3 +89,5 @@ class SetoranTest(unittest.TestCase):
 
         Setoran(start="1/1", end='1/6', jenis='tambah', timestamp=datetime.now(), lulus=True, santri=Santri(nama='ihfazh'))
         Setoran(start="1/1", end='1/6', jenis='murojaah', timestamp=datetime.now(), lulus=True, santri=Santri(nama='ihfazh'))
+
+

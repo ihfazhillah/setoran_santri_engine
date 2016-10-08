@@ -58,5 +58,5 @@ class Setoran(db.Entity):
     santri = Required(Santri)
 
 
-# db.bind("sqlite", ":memory:")
+# db.bind("sqlite", ":memory:")ss
 # db.generate_mapping(create_tables=True)
