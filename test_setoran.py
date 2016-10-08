@@ -42,6 +42,9 @@ class SetoranTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             Setoran(start="300/2", end='0/2', jenis='makan', timestamp=datetime.now()    , lulus=True, santri=Santri(nama='ihfazh'))
 
+        Setoran(start="1/2", end="1/3", jenis='tambah', timestamp=datetime.now(),
+            lulus=True, santri=Santri(nama='ihfazh'))
+
 
 
     
