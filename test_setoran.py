@@ -55,11 +55,16 @@ class SetoranTest(unittest.TestCase):
 
         with self.assertRaises(ValueError):
             Setoran(start="1/0", end='1/6', jenis='makan', timestamp=datetime.now(), lulus=True, santri=Santri(nama='ihfazh'))
-            
-        Setoran(start="1/1", end='1/7', jenis='makan', timestamp=datetime.now(), lulus=True, santri=Santri(nama='ihfazh'))
+
+        Setoran(start="1/1", end='1/7', jenis='tambah', timestamp=datetime.now(), lulus=True, santri=Santri(nama='ihfazh'))
 
 
+    @db_session
+    def test_jenis_hanya_boleh_dua(self):
+        """yaitu murojaah dan tambah"""
 
+        with self.assertRaises(ValueError):
+            Setoran(start="1/1", end='1/6', jenis='makan', timestamp=datetime.now(), lulus=True, santri=Santri(nama='ihfazh'))
 
-    
-   
+        Setoran(start="1/1", end='1/6', jenis='tambah', timestamp=datetime.now(), lulus=True, santri=Santri(nama='ihfazh'))
+        Setoran(start="1/1", end='1/6', jenis='murojaah', timestamp=datetime.now(), lulus=True, santri=Santri(nama='ihfazh'))

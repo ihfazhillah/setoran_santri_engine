@@ -52,7 +52,7 @@ class Setoran(db.Entity):
     id = PrimaryKey(int, auto=True)
     start = Required(str, py_check=check_startend_format)
     end = Required(str, py_check=check_startend_format)
-    jenis = Required(str)
+    jenis = Required(str, py_check=lambda v : v in ['tambah', 'murojaah'])
     timestamp = Required(datetime)
     lulus = Required(bool)
     santri = Required(Santri)
