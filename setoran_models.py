@@ -1,5 +1,6 @@
 from datetime import datetime
 from pony.orm import *
+import json 
 
 
 db = Database()
@@ -14,9 +15,22 @@ def check_startend_format(val):
     splitted_val = val.split("/")
 
     if len(splitted_val) != 2:
-        raise ValueError
+        return False
 
-    return all(splitted.isdigit() for splitted in splitted_val)
+    all_digits =  all(splitted.isdigit() for splitted in splitted_val)
+    
+    with open("daftar_surat.json") as f:
+        daftar_surat = json.load(f, encoding="utf-8")
+
+    all_surah_no = [surah['surah_no'] for surah in daftar_surat]
+
+    if int(splitted_val[0]) in all_surah_no:
+        surah_no = True
+    else:
+        surah_no = False
+
+    return all_digits and surah_no
+
 
 
 
