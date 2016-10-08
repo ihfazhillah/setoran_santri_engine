@@ -17,17 +17,24 @@ def check_startend_format(val):
     if len(splitted_val) != 2:
         return False
 
-    all_digits =  all(splitted.isdigit() for splitted in splitted_val)
+    cur_surah = int(splitted_val[0])
+    cur_ayah = int(splitted_val[1])
+
+    all_digits = all(splitted.isdigit() for splitted in splitted_val)
     
     with open("daftar_surat.json") as f:
         daftar_surat = json.load(f, encoding="utf-8")
 
     all_surah_no = [surah['surah_no'] for surah in daftar_surat]
 
-    if int(splitted_val[0]) in all_surah_no:
-        surah_no = True
-    else:
-        surah_no = False
+    surah_no = cur_surah in all_surah_no
+
+    for surah in daftar_surat:
+        if surah['surah_no'] == cur_surah:
+            if cur_ayah > surah['surah_ayat']:
+                return False
+            if cur_ayah < 1:
+                return False
 
     return all_digits and surah_no
 

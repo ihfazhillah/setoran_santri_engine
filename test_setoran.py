@@ -35,7 +35,7 @@ class SetoranTest(unittest.TestCase):
                 Setoran(start="hf/fs", end='jsfa/sdjfa', jenis='makan', timestamp=datetime.now()    , lulus=True, santri=Santri(nama='ihfazh'))
 
 
-            Setoran(start="1/2", end='1/2', jenis='makan', timestamp=datetime.now()    , lulus=True, santri=Santri(nama='ihfazh'))
+            Setoran(start="1/2", end='1/2', jenis='tambah', timestamp=datetime.now()    , lulus=True, santri=Santri(nama='ihfazh'))
 
     @db_session
     def test_startend_data_notfound(self):
@@ -44,6 +44,20 @@ class SetoranTest(unittest.TestCase):
 
         Setoran(start="1/2", end="1/3", jenis='tambah', timestamp=datetime.now(),
             lulus=True, santri=Santri(nama='ihfazh'))
+
+    @db_session
+    def test_startend_ayat_data_not_lt_or_not_gt_surah_ayat(self):
+        """ayat yang dicatat tidak boleh lebih banyak atau lebih sedikit
+        daripada ayatnya surat yang di tulis"""
+
+        with self.assertRaises(ValueError):
+            Setoran(start="1/0", end='1/10', jenis='makan', timestamp=datetime.now(), lulus=True, santri=Santri(nama='ihfazh'))
+
+        with self.assertRaises(ValueError):
+            Setoran(start="1/0", end='1/6', jenis='makan', timestamp=datetime.now(), lulus=True, santri=Santri(nama='ihfazh'))
+            
+        Setoran(start="1/1", end='1/7', jenis='makan', timestamp=datetime.now(), lulus=True, santri=Santri(nama='ihfazh'))
+
 
 
 
