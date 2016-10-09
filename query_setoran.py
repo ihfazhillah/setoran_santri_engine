@@ -33,8 +33,8 @@ def get_belum_tambah():
     return select(santri for santri in Santri\
         for setoran in santri.setorans \
         if count(select(setor for setor in Setoran if setor.santri is santri \
-        and setor.jenis is 'tambah')) == 0\
-        )
+        and setor.jenis is 'tambah' \
+        and setor.timestamp.date() is datetime.now().date())) == 0)
 
 @db_session
 def get_sudah_tambah_harus_ulang():

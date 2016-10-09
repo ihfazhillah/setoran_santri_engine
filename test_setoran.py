@@ -160,3 +160,18 @@ class SetoranTest(unittest.TestCase):
         self.assertEqual(count(blm), 3)
         self.assertListIn(['raffi', 'kholis', 'iqbal'], list_belum)
         self.assertListNotIn(['wildan', 'suryadi', 'farhan'], list_belum)
+
+    @db_session
+    def test_yang_belum_tambah_hari_ini(self):
+        now = datetime.now()
+        yesterday = now - timedelta(days=1)
+        kholis = get(santri for santri in Santri if santri.nama == 'kholis')
+        iqbal = get(santri for santri in Santri if santri.nama == 'iqbal')
+        Setoran(start='1/2', end='3/3', jenis='tambah', lulus=True, timestamp=yesterday, santri=kholis)
+        Setoran(start='1/2', end='3/3', jenis='tambah', lulus=True, timestamp=yesterday, santri=iqbal)
+        commit()
+        blm = get_belum_tambah()
+        list_belum = [santri.nama for santri in blm]
+        self.assertEqual(count(blm), 3)
+        self.assertListIn(['raffi', 'kholis', 'iqbal'], list_belum)
+        self.assertListNotIn(['wildan', 'suryadi', 'farhan'], list_belum)
