@@ -38,9 +38,13 @@ def get_belum_tambah():
 
 @db_session
 def get_sudah_tambah_harus_ulang():
-    return left_join(santri for santri in Santri \
+    return select(santri for santri in Santri \
                      for setoran in santri.setorans \
-                     if setoran.jenis == 'tambah' and setoran.lulus is False)
+                     if count(select(setor for setor in Setoran \
+                     if setor.santri is santri \
+                     and setor.jenis is 'tambah'\
+                     and setor.lulus is  True\
+                     and setor.timestamp.date() is datetime.now().date())) is 0and setoran.jenis is 'tambah')
 
 @db_session
 def get_sudah_murojaah_harus_ulang():
