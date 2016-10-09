@@ -94,8 +94,8 @@ class SetoranTest(unittest.TestCase):
         blm_setor = get_belum_setor()
         self.assertEqual(count(blm_setor), 1)
         # self.fail(help(blm_setor))
-        self.assertIn('raffi', [santri for santri in blm_setor])
-        self.assertNotIn('iqbal', [santri for santri in blm_setor])
+        self.assertIn('raffi', [santri.nama for santri in blm_setor])
+        self.assertNotIn('iqbal', [santri.nama for santri in blm_setor])
 
     @db_session
     def test_yang_belum_murojaah(self):

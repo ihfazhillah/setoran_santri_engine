@@ -3,7 +3,7 @@ from setoran_models import *
 
 def get_belum_setor():
     now = datetime.now()
-    return select(santri.nama for santri in Santri if not santri.setorans)
+    return select(santri for santri in Santri if not santri.setorans)
 
 def get_belum_murojaah():
 
