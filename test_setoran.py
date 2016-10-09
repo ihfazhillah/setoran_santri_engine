@@ -2,7 +2,7 @@
 import os
 import unittest
 from datetime import timedelta
-from query_setoran import get_belum_setor, get_belum_murojaah, get_sudah_tambah_harus_ulang, get_sudah_murojaah_harus_ulang, get_sudah_free
+from query_setoran import get_belum_setor, get_belum_murojaah, get_belum_tambah, get_sudah_tambah_harus_ulang, get_sudah_murojaah_harus_ulang, get_sudah_free
 from setoran_models import *
 
 db.bind("sqlite", "testing.sqlite", create_db=True)
@@ -151,4 +151,12 @@ class SetoranTest(unittest.TestCase):
         list_belum = [santri.nama for santri in blm]
         # self.assertEqual(count(blm), 3)
         self.assertListIn(['suryadi', 'raffi', 'farhan'], list_belum)
-        self.assertNotIn(['iqbal', 'wildan', 'kholis'], list_belum)
+        self.assertListNotIn(['iqbal', 'wildan', 'kholis'], list_belum)
+
+    @db_session
+    def test_yang_belum_tambah(self):
+        blm = get_belum_tambah()
+        list_belum = [santri.nama for santri in blm]
+        self.assertEqual(count(blm), 3)
+        self.assertListIn(['raffi', 'kholis', 'iqbal'], list_belum)
+        self.assertListNotIn(['wildan', 'suryadi', 'farhan'], list_belum)

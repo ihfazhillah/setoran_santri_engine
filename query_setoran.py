@@ -26,11 +26,15 @@ def get_belum_murojaah():
                        and setor.jenis == 'murojaah'\
                        and setor.timestamp.date() == datetime.now().date())) == 0 or not santri.setorans)
 
-    # santri = select(s for s in santri for setoran in s.setorans if setoran.jenis != 'murojaah' or not s.setorans )
-
-   
-
     return santri
+
+@db_session
+def get_belum_tambah():
+    return select(santri for santri in Santri\
+        for setoran in santri.setorans \
+        if count(select(setor for setor in Setoran if setor.santri is santri \
+        and setor.jenis is 'tambah')) == 0\
+        )
 
 @db_session
 def get_sudah_tambah_harus_ulang():
