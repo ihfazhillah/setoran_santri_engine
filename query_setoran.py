@@ -52,9 +52,14 @@ def get_sudah_tambah_harus_ulang():
 
 @db_session
 def get_sudah_murojaah_harus_ulang():
-    return left_join(santri for santri in Santri \
-                     for setoran in santri.setorans\
-                     if setoran.jenis == 'murojaah' and setoran.lulus is False)
+    return select(santri for santri in Santri for setoran in santri.setorans \
+        if count(select(setor for setor in Setoran\
+            if setor.santri is santri \
+            and setor.jenis is 'murojaah'\
+            and setor.lulus is True\
+            and setor.timestamp.date() is datetime.now().date())) is 0\
+        and setoran.jenis is 'murojaah')
+    
 
 @db_session
 def get_sudah_free():

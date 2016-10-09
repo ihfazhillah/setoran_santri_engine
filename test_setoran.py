@@ -189,3 +189,18 @@ class SetoranTest(unittest.TestCase):
         self.assertIn('suryadi', [santri.nama for santri in tambah_ulang])
         self.assertListNotIn(['wildan', 'iqbal', 'farhan', 'kholis' 'raffi'],
                              [santri.nama for santri in tambah_ulang])
+
+    @db_session
+    def test_sudah_murojaah_tapi_harus_ulang_hari_ini(self):
+        yesterday = datetime.now() - timedelta(days=1)
+        iqbal = get(santri for santri in Santri if santri.nama == 'iqbal')
+        wildan = get(santri for santri in Santri if santri.nama == 'wildan')
+        Setoran(start='1/2', end='3/3', jenis='murojaah', lulus=True, timestamp=yesterday, santri=iqbal)
+        Setoran(start='1/2', end='3/3', jenis='murojaah', lulus=False, timestamp=yesterday, santri=wildan)
+        commit()
+        mur_ulang = get_sudah_murojaah_harus_ulang()
+        self.assertEqual(count(mur_ulang), 1)
+        list_hasil = [santri.nama for santri in mur_ulang]
+        self.assertIn('iqbal', list_hasil)
+        self.assertListNotIn(['suryadi', 'wildan', 
+                              'farhan', 'kholis', 'raffi'], list_hasil)
