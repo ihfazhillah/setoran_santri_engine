@@ -1,7 +1,7 @@
 import os
 import unittest
+from query_setoran import get_belum_setor, get_belum_murojaah
 from setoran_models import *
-
 
 db.bind("sqlite", "testing.sqlite", create_db=True)
 db.generate_mapping(create_tables=True)
@@ -28,16 +28,15 @@ class SetoranTest(unittest.TestCase):
             Setoran(start='1/1', end='1/7', jenis='tambah',
                     timestamp=datetime.now(), lulus=True, santri=farhan)
             Setoran(start='1/1', end='1/7', jenis='murojaah',
-                    timestamp=datetime.now(), lulus=True, santri=kholis)
+                    timestamp=datetime.now(), lulus=False, santri=kholis)
             Setoran(start='1/1', end='1/7', jenis='tambah',
-                    timestamp=datetime.now(), lulus=True, santri=farhan)
+                    timestamp=datetime.now(), lulus=True, santri=suryadi)
             commit()
 
 
     def tearDown(self):
         db.drop_all_tables(with_all_data=True)
         os.remove("testing.sqlite")
-        pass
 
     def test_start_end_format(self):
         """start or end harus berupa string, tapi dengan format 
@@ -90,4 +89,21 @@ class SetoranTest(unittest.TestCase):
         Setoran(start="1/1", end='1/6', jenis='tambah', timestamp=datetime.now(), lulus=True, santri=Santri(nama='ihfazh'))
         Setoran(start="1/1", end='1/6', jenis='murojaah', timestamp=datetime.now(), lulus=True, santri=Santri(nama='ihfazh'))
 
+    @db_session
+    def test_yang_belum_setor_sama_sekali(self):
+        blm_setor = get_belum_setor()
+        self.assertEqual(count(blm_setor), 1)
+        # self.fail(help(blm_setor))
+        self.assertIn('raffi', [santri for santri in blm_setor])
+        self.assertNotIn('iqbal', [santri for santri in blm_setor])
 
+    @db_session
+    def test_yang_belum_murojaah(self):
+        blm_mur = get_belum_murojaah()
+        self.assertEqual(count(blm_mur), 3)
+        self.assertIn('raffi', [santri.nama for santri in blm_mur])
+        self.assertIn('suryadi', [santri.nama for santri in blm_mur])
+        self.assertIn('farhan', [santri.nama for santri in blm_mur])
+        self.assertNotIn('kholis', [santri.nama for santri in blm_mur])
+        self.assertNotIn('iqbal', [santri.nama for santri in blm_mur])
+        self.assertNotIn('wildan', [santri.nama for santri in blm_mur])
