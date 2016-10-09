@@ -3,11 +3,10 @@ from setoran_models import Santri, select, count, left_join, db_session
 
 @db_session
 def get_belum_setor():
-    santri_day = left_join(santri for santri in Santri for setoran in santri.setorans  if setoran.timestamp.date() == datetime.now().date())
-
-    santri = select(santri for santri in Santri if santri not in santri_day).filter(lambda s: not s.setorans)
-
-    return santri
+    return select(santri for santri in Santri \
+                  for setoran in santri.setorans\
+                  if not setoran.timestamp.date() == datetime.now().date()) or \
+            select(santri for santri in Santri if not santri.setorans)
 
 @db_session
 def get_belum_murojaah():
