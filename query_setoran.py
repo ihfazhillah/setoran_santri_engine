@@ -38,6 +38,10 @@ def get_belum_tambah():
 
 @db_session
 def get_sudah_tambah_harus_ulang():
+    """
+    yang sudah tambah harus ulang adalah, ketika dia tidak punya atribut setor.jenis is 'tambah' dan setor.lulus is True di hari ini,
+    tapi dia masih memiliki atribut 'tambah'
+    """
     return select(santri for santri in Santri \
                      for setoran in santri.setorans \
                      if count(select(setor for setor in Setoran \
