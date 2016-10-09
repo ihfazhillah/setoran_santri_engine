@@ -24,9 +24,7 @@ def get_belum_murojaah():
                        if count(select(setor for setor in Setoran \
                        if setor.santri == santri\
                        and setor.jenis == 'murojaah'\
-                       and 
-                       setor.timestamp.date() == datetime.now().date())) == 0\
-                       or not santri.setorans)
+                       and setor.timestamp.date() == datetime.now().date())) == 0 or not santri.setorans)
 
     # santri = select(s for s in santri for setoran in s.setorans if setoran.jenis != 'murojaah' or not s.setorans )
 
