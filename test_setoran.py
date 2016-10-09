@@ -1,6 +1,6 @@
 import os
 import unittest
-from query_setoran import get_belum_setor, get_belum_murojaah
+from query_setoran import get_belum_setor, get_belum_murojaah, get_sudah_tambah_harus_ulang
 from setoran_models import *
 
 db.bind("sqlite", "testing.sqlite", create_db=True)
@@ -53,7 +53,7 @@ class SetoranTest(unittest.TestCase):
         """
         with db_session():
             with self.assertRaises(ValueError):
-                Setoran(start="hf", end='skdj', jenis='makan', timestamp=datetime.now()    , lulus=True, santri=Santri(nama='ihfazh'))
+                Setoran(start="hf", end='skdj', jenis='makan', timestamp=datetime.now(), lulus=True, santri=Santri(nama='ihfazh'))
 
             with self.assertRaises(ValueError):
                 Setoran(start="hf", end='skdj', jenis='makan', timestamp=datetime.now()    , lulus=True, santri=Santri(nama='ihfazh'))
@@ -114,3 +114,10 @@ class SetoranTest(unittest.TestCase):
         self.assertListNotIn(['kholis', 'iqbal', 'wildan'],
                              [santri.nama for santri in blm_mur])
         
+    @db_session
+    def test_yang_sudah_tambah_harus_ulang(self):
+        tambah_ulang = get_sudah_tambah_harus_ulang()
+        self.assertEqual(count(tambah_ulang), 1)
+        self.assertIn('suryadi', [santri.nama for santri in tambah_ulang])
+        self.assertListNotIn(['wildan', 'iqbal', 'farhan', 'kholis' 'raffi'],
+                             [santri.nama for santri in tambah_ulang])

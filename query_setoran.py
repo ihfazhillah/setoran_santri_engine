@@ -12,4 +12,7 @@ def get_belum_murojaah():
 
     return result
 
-
+def get_sudah_tambah_harus_ulang():
+    return left_join(santri for santri in Santri \
+                     for setoran in santri.setorans \
+                     if setoran.jenis == 'tambah' and setoran.lulus is False)
