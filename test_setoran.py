@@ -1,5 +1,7 @@
+#pylint: disable=w0614, w0401, w0622, E1123
 import os
 import unittest
+from datetime import timedelta
 from query_setoran import get_belum_setor, get_belum_murojaah, get_sudah_tambah_harus_ulang, get_sudah_murojaah_harus_ulang, get_sudah_free
 from setoran_models import *
 
@@ -20,26 +22,7 @@ class SetoranTest(unittest.TestCase):
     def setUp(self):
         # db.disconnect()
         db.create_tables()
-        with db_session:
-            raffi = Santri(nama='raffi')
-            suryadi = Santri(nama='suryadi')
-            kholis = Santri(nama='kholis')
-            farhan = Santri(nama='farhan')
-            iqbal = Santri(nama='iqbal')
-            wildan = Santri(nama='wildan')
-            Setoran(start='1/1', end='1/7', jenis='murojaah',
-                    timestamp=datetime.now(), lulus=True, santri=wildan)
-            Setoran(start='1/1', end='1/7', jenis='tambah',
-                    timestamp=datetime.now(), lulus=True, santri=wildan)
-            Setoran(start='1/1', end='1/7', jenis='murojaah',
-                    timestamp=datetime.now(), lulus=False, santri=iqbal)
-            Setoran(start='1/1', end='1/7', jenis='tambah',
-                    timestamp=datetime.now(), lulus=True, santri=farhan)
-            Setoran(start='1/1', end='1/7', jenis='murojaah',
-                    timestamp=datetime.now(), lulus=True, santri=kholis)
-            Setoran(start='1/1', end='1/7', jenis='tambah',
-                    timestamp=datetime.now(), lulus=False, santri=suryadi)
-            commit()
+        populate_db()
 
 
     def tearDown(self):
@@ -56,22 +39,21 @@ class SetoranTest(unittest.TestCase):
                 Setoran(start="hf", end='skdj', jenis='makan', timestamp=datetime.now(), lulus=True, santri=Santri(nama='ihfazh'))
 
             with self.assertRaises(ValueError):
-                Setoran(start="hf", end='skdj', jenis='makan', timestamp=datetime.now()    , lulus=True, santri=Santri(nama='ihfazh'))
+                Setoran(start="hf", end='skdj', jenis='makan', timestamp=datetime.now(), lulus=True, santri=Santri(nama='ihfazh'))
 
 
             with self.assertRaises(ValueError):
-                Setoran(start="hf/fs", end='jsfa/sdjfa', jenis='makan', timestamp=datetime.now()    , lulus=True, santri=Santri(nama='ihfazh'))
+                Setoran(start="hf/fs", end='jsfa/sdjfa', jenis='makan', timestamp=datetime.now(), lulus=True, santri=Santri(nama='ihfazh'))
 
 
-            Setoran(start="1/2", end='1/2', jenis='tambah', timestamp=datetime.now()    , lulus=True, santri=Santri(nama='ihfazh'))
+            Setoran(start="1/2", end='1/2', jenis='tambah', timestamp=datetime.now(), lulus=True, santri=Santri(nama='ihfazh'))
 
     @db_session
     def test_startend_data_notfound(self):
         with self.assertRaises(ValueError):
-            Setoran(start="300/2", end='0/2', jenis='makan', timestamp=datetime.now()    , lulus=True, santri=Santri(nama='ihfazh'))
+            Setoran(start="300/2", end='0/2', jenis='makan', timestamp=datetime.now(), lulus=True, santri=Santri(nama='ihfazh'))
 
-        Setoran(start="1/2", end="1/3", jenis='tambah', timestamp=datetime.now(),
-            lulus=True, santri=Santri(nama='ihfazh'))
+        Setoran(start="1/2", end="1/3", jenis='tambah', timestamp=datetime.now(), lulus=True, santri=Santri(nama='ihfazh'))
 
     @db_session
     def test_startend_ayat_data_not_lt_or_not_gt_surah_ayat(self):
@@ -139,3 +121,17 @@ class SetoranTest(unittest.TestCase):
         self.assertIn('wildan', list_hasil)
         self.assertListNotIn(['suryadi', 'iqbal', 
                               'farhan', 'kholis', 'raffi'], list_hasil)
+
+    @db_session
+    def test_yang_belum_murojaah_tambah_sama_sekali_hari_ini(self):
+        """ditest ini dan yang berikutnya, akan menambahkan setoran dihari yang kemarin dan dia sudah tidak ada tanggungan dihari kemarin.
+
+        result adalah hanya santri yang belum setor hari ini..."""
+        raffi = get(santri for santri in Santri if santri.nama == 'raffi')
+        now = datetime.now()
+        yesterday = now - timedelta(days=1)
+        Setoran(start='1/1', end='1/3', jenis='tambah', lulus=True, timestamp=yesterday, santri=raffi)
+        Setoran(start='1/1', end='1/3', jenis='murojaah', lulus=True, timestamp=yesterday, santri=raffi)
+        blm = get_belum_setor()
+        self.assertEqual(count(blm), 1)
+        self.assertIn('raffi', [santri.nama for santri in blm])

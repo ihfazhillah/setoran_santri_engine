@@ -1,6 +1,8 @@
+#pylint: disable=w0614, w0401, w0622, E1123
+
+import json 
 from datetime import datetime
 from pony.orm import *
-import json 
 
 
 db = Database()
@@ -52,11 +54,30 @@ class Setoran(db.Entity):
     id = PrimaryKey(int, auto=True)
     start = Required(str, py_check=check_startend_format)
     end = Required(str, py_check=check_startend_format)
-    jenis = Required(str, py_check=lambda v : v in ['tambah', 'murojaah'])
+    jenis = Required(str, py_check=lambda v: v in ['tambah', 'murojaah'])
     timestamp = Required(datetime)
     lulus = Required(bool)
     santri = Required(Santri)
 
+def populate_db():
+    with db_session:
+        raffi = Santri(nama='raffi')
+        suryadi = Santri(nama='suryadi')
+        kholis = Santri(nama='kholis')
+        farhan = Santri(nama='farhan')
+        iqbal = Santri(nama='iqbal')
+        wildan = Santri(nama='wildan')
+        Setoran(start='1/1', end='1/7', jenis='murojaah',
+                timestamp=datetime.now(), lulus=True, santri=wildan)
+        Setoran(start='1/1', end='1/7', jenis='tambah',
+                timestamp=datetime.now(), lulus=True, santri=wildan)
+        Setoran(start='1/1', end='1/7', jenis='murojaah',
+                timestamp=datetime.now(), lulus=False, santri=iqbal)
+        Setoran(start='1/1', end='1/7', jenis='tambah',
+                timestamp=datetime.now(), lulus=True, santri=farhan)
+        Setoran(start='1/1', end='1/7', jenis='murojaah',
+                timestamp=datetime.now(), lulus=True, santri=kholis)
+        Setoran(start='1/1', end='1/7', jenis='tambah',
+                timestamp=datetime.now(), lulus=False, santri=suryadi)
+        commit()
 
-# db.bind("sqlite", ":memory:")ss
-# db.generate_mapping(create_tables=True)
