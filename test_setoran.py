@@ -36,9 +36,9 @@ class SetoranTest(unittest.TestCase):
             Setoran(start='1/1', end='1/7', jenis='tambah',
                     timestamp=datetime.now(), lulus=True, santri=farhan)
             Setoran(start='1/1', end='1/7', jenis='murojaah',
-                    timestamp=datetime.now(), lulus=False, santri=kholis)
+                    timestamp=datetime.now(), lulus=True, santri=kholis)
             Setoran(start='1/1', end='1/7', jenis='tambah',
-                    timestamp=datetime.now(), lulus=True, santri=suryadi)
+                    timestamp=datetime.now(), lulus=False, santri=suryadi)
             commit()
 
 
