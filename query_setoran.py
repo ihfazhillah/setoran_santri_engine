@@ -21,4 +21,15 @@ def get_sudah_murojaah_harus_ulang():
     return left_join(santri for santri in Santri \
                      for setoran in santri.setorans\
                      if setoran.jenis == 'murojaah' and setoran.lulus is False)
-    
+
+def get_sudah_free():
+    """sudah free adalah ketika jenis setoran == murojaah dan jenis murojaah == tambah dan lulus kedua duanya == True """
+    santri = left_join(santri for santri in Santri \
+                     for setoran in santri.setorans \
+                     if (setoran.jenis == 'murojaah' or setoran.jenis == 'tambah') and setoran.lulus is True)
+
+
+    return santri.filter(lambda s: count(s.setorans) == 2)
+
+
+   
