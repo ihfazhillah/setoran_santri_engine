@@ -8,6 +8,14 @@ db.generate_mapping(create_tables=True)
 
 class SetoranTest(unittest.TestCase):
 
+    def assertListIn(self, expected_list, test_list):
+        for expected in expected_list:
+            self.assertIn(expected, test_list)
+
+    def assertListNotIn(self, expected_list, test_list):
+        for expected in expected_list:
+            self.assertNotIn(expected, test_list)
+
 
     def setUp(self):
         # db.disconnect()
@@ -101,9 +109,8 @@ class SetoranTest(unittest.TestCase):
     def test_yang_belum_murojaah(self):
         blm_mur = get_belum_murojaah()
         self.assertEqual(count(blm_mur), 3)
-        self.assertIn('raffi', [santri.nama for santri in blm_mur])
-        self.assertIn('suryadi', [santri.nama for santri in blm_mur])
-        self.assertIn('farhan', [santri.nama for santri in blm_mur])
-        self.assertNotIn('kholis', [santri.nama for santri in blm_mur])
-        self.assertNotIn('iqbal', [santri.nama for santri in blm_mur])
-        self.assertNotIn('wildan', [santri.nama for santri in blm_mur])
+        self.assertListIn(['raffi', 'suryadi', 'farhan'], [santri.nama for santri in blm_mur])
+
+        self.assertListNotIn(['kholis', 'iqbal', 'wildan'],
+                             [santri.nama for santri in blm_mur])
+        
