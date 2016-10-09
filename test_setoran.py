@@ -7,7 +7,6 @@ from setoran_models import *
 
 db.bind("sqlite", "testing.sqlite", create_db=True)
 db.generate_mapping(create_tables=True)
-
 class SetoranTest(unittest.TestCase):
 
     def assertListIn(self, expected_list, test_list):
@@ -203,4 +202,18 @@ class SetoranTest(unittest.TestCase):
         list_hasil = [santri.nama for santri in mur_ulang]
         self.assertIn('iqbal', list_hasil)
         self.assertListNotIn(['suryadi', 'wildan', 
+                              'farhan', 'kholis', 'raffi'], list_hasil)
+
+    @db_session
+    def test_sudah_tidak_ada_tanggungan_hari_ini(self):
+        yesterday = datetime.now() - timedelta(days=1)
+        raffi = get(santri for santri in Santri if santri.nama == 'raffi')
+        Setoran(start='1/2', end='3/3', jenis='tambah', lulus=True, timestamp=yesterday, santri=raffi)
+        Setoran(start='1/2', end='3/3', jenis='murojaah', lulus=True, timestamp=yesterday, santri=raffi)
+        commit()
+        free = get_sudah_free()
+        list_hasil = [santri.nama for santri in free]
+        self.assertEqual(count(free), 1)
+        self.assertIn('wildan', list_hasil)
+        self.assertListNotIn(['suryadi', 'iqbal', 
                               'farhan', 'kholis', 'raffi'], list_hasil)

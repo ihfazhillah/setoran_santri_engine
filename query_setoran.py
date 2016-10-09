@@ -59,21 +59,17 @@ def get_sudah_murojaah_harus_ulang():
             and setor.lulus is True\
             and setor.timestamp.date() is datetime.now().date())) is 0\
         and setoran.jenis is 'murojaah')
-    
+
 
 @db_session
 def get_sudah_free():
-    """sudah free adalah ketika jenis setoran == murojaah dan jenis murojaah == tambah dan lulus kedua duanya == True
-
-    Trick:
-        - query pertama mendapatkan santri yang jenis murojaah dan jenis adalah tambah, dan disetiap row yang didapatkan harus status dari kelulusan adalah True
-        - query kedua untuk menfilter santri yang sudah memiliki 2 row dari setorans yang didapatkan dari query pertama """
-    santri = left_join(santri for santri in Santri \
-                     for setoran in santri.setorans \
-                     if (setoran.jenis == 'murojaah' or setoran.jenis == 'tambah') and setoran.lulus is True)
-
-
-    return santri.filter(lambda s: count(s.setorans) == 2)
-
-
-   
+    return select(santri for santri in Santri for setoran in santri.setorans\
+        if count(select(setor for setor in Setoran\
+            if setor.santri is santri\
+            and setor.jenis is 'tambah'\
+            and setor.lulus is True)) is 1\
+        and count(select(setor for setor in Setoran\
+            if setor.santri is santri\
+            and setor.jenis is 'murojaah'\
+            and setor.lulus is True)) is 1\
+        and setoran.timestamp.date() is datetime.now().date())
