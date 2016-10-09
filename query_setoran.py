@@ -1,9 +1,11 @@
-from setoran_models import Santri, select, count, left_join
+from setoran_models import Santri, select, count, left_join, db_session
 
 
+@db_session
 def get_belum_setor():
     return select(santri for santri in Santri if not santri.setorans)
 
+@db_session
 def get_belum_murojaah():
 
     santri = left_join(santri for santri in Santri for setoran in santri.setorans if setoran.jenis != 'murojaah' or not setoran)
@@ -12,16 +14,19 @@ def get_belum_murojaah():
 
     return result
 
+@db_session
 def get_sudah_tambah_harus_ulang():
     return left_join(santri for santri in Santri \
                      for setoran in santri.setorans \
                      if setoran.jenis == 'tambah' and setoran.lulus is False)
 
+@db_session
 def get_sudah_murojaah_harus_ulang():
     return left_join(santri for santri in Santri \
                      for setoran in santri.setorans\
                      if setoran.jenis == 'murojaah' and setoran.lulus is False)
 
+@db_session
 def get_sudah_free():
     """sudah free adalah ketika jenis setoran == murojaah dan jenis murojaah == tambah dan lulus kedua duanya == True
 
