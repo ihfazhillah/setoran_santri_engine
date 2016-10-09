@@ -3,6 +3,14 @@ from setoran_models import Santri, select, count, left_join, db_session
 
 @db_session
 def get_belum_setor():
+    """
+    maksud kode dibawah ini:
+    1. query pertama = mendapatkan santri yang tidak setoran hari ini, dengan asumsi bahwa dia sudah pernah setoran sebelumnya sehingga tidak di skip
+    2. query kedua, untuk ketika dia belum pernah setoran sama sekali.
+
+    sementara ini yang bisa saya pikirkan untuk memecahkan masalah ini... 
+    (total hampir 2 jam) :(
+    """
     return select(santri for santri in Santri \
                   for setoran in santri.setorans\
                   if not setoran.timestamp.date() == datetime.now().date()) or \
