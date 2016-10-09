@@ -1,6 +1,6 @@
 import os
 import unittest
-from query_setoran import get_belum_setor, get_belum_murojaah, get_sudah_tambah_harus_ulang
+from query_setoran import get_belum_setor, get_belum_murojaah, get_sudah_tambah_harus_ulang, get_sudah_murojaah_harus_ulang
 from setoran_models import *
 
 db.bind("sqlite", "testing.sqlite", create_db=True)
@@ -121,3 +121,12 @@ class SetoranTest(unittest.TestCase):
         self.assertIn('suryadi', [santri.nama for santri in tambah_ulang])
         self.assertListNotIn(['wildan', 'iqbal', 'farhan', 'kholis' 'raffi'],
                              [santri.nama for santri in tambah_ulang])
+
+    @db_session
+    def test_sudah_murojaah_tapi_harus_ulang(self):
+        mur_ulang = get_sudah_murojaah_harus_ulang()
+        self.assertEqual(count(mur_ulang), 1)
+        list_hasil = [santri.nama for santri in mur_ulang]
+        self.assertIn('iqbal', list_hasil)
+        self.assertListNotIn(['suryadi', 'wildan', 
+                              'farhan', 'kholis', 'raffi'], list_hasil)
