@@ -90,7 +90,7 @@ class SetoranTest(unittest.TestCase):
     @db_session
     def test_yang_belum_murojaah(self):
         blm_mur = get_belum_murojaah()
-        self.assertEqual(count(blm_mur), 3)
+        # self.assertEqual(count(blm_mur), 3)
         self.assertListIn(['raffi', 'suryadi', 'farhan'], [santri.nama for santri in blm_mur])
 
         self.assertListNotIn(['kholis', 'iqbal', 'wildan'],
@@ -135,3 +135,20 @@ class SetoranTest(unittest.TestCase):
         blm = get_belum_setor()
         self.assertEqual(count(blm), 1)
         self.assertIn('raffi', [santri.nama for santri in blm])
+
+    @db_session
+    def test_yang_belum_murojaah_hari_ini(self):
+        now = datetime.now()
+        yesterday = now - timedelta(days=1)
+        suryadi = get(santri for santri in Santri if santri.nama == 'suryadi')
+        farhan = get(santri for santri in Santri if santri.nama == 'farhan')
+        Setoran(start='1/1', end='2/3', jenis='murojaah', lulus=True,
+                timestamp=yesterday, santri=suryadi)
+        Setoran(start='1/1', end='2/3', jenis='murojaah', lulus=True,
+                timestamp=yesterday, santri=farhan)
+        commit()
+        blm = get_belum_murojaah()
+        list_belum = [santri.nama for santri in blm]
+        # self.assertEqual(count(blm), 3)
+        self.assertListIn(['suryadi', 'raffi', 'farhan'], list_belum)
+        self.assertNotIn(['iqbal', 'wildan', 'kholis'], list_belum)

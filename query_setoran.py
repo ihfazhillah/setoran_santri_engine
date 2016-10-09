@@ -1,5 +1,5 @@
 from datetime import datetime
-from setoran_models import Santri, select, count, left_join, db_session
+from setoran_models import Santri, select, count, left_join, db_session, Setoran, exists
 
 @db_session
 def get_belum_setor():
@@ -19,11 +19,20 @@ def get_belum_setor():
 @db_session
 def get_belum_murojaah():
 
-    santri = left_join(santri for santri in Santri for setoran in santri.setorans if setoran.jenis != 'murojaah' or not setoran)
+    santri = left_join(santri for santri in Santri \
+                       for setoran in santri.setorans \
+                       if count(select(setor for setor in Setoran \
+                       if setor.santri == santri\
+                       and setor.jenis == 'murojaah'\
+                       and 
+                       setor.timestamp.date() == datetime.now().date())) == 0\
+                       or not santri.setorans)
 
-    result = santri.filter(lambda s: 'murojaah' not in s.setorans.jenis)
+    # santri = select(s for s in santri for setoran in s.setorans if setoran.jenis != 'murojaah' or not s.setorans )
 
-    return result
+   
+
+    return santri
 
 @db_session
 def get_sudah_tambah_harus_ulang():
