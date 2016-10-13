@@ -57,7 +57,7 @@ def get_sudah_murojaah_harus_ulang():
             if setor.santri is santri \
             and setor.jenis is 'murojaah'\
             and setor.lulus is True\
-            and setor.timestamp.date() is datetime.now().date())) is 0\
+            and setor.timestamp.date() is datetime.now().date())) is 0 \
         and setoran.jenis is 'murojaah')
 
 
