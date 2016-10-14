@@ -276,7 +276,7 @@ def process_lulus_setor(bot, update):
             Lulus : {lulus}
 
             Yakin mau save ?
-            """
+            """.strip()
 
             context = CONTEXT[chat_id]['setoran']
             context['timestamp'] = datetime.now()
