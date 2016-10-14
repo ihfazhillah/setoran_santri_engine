@@ -9,6 +9,9 @@ from telegram import KeyboardButton, ReplyKeyboardMarkup
 from tg_config import tg_token, admin_ids
 from setoran_models import check_startend_format
 from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters, RegexHandler, ConversationHandler)
+from setoran_models import *
+from db_config import db
+from datetime import datetime
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -96,6 +99,13 @@ def process_tambah_nama_santri(bot, update):
     chat_id = update.message.chat_id 
 
     if chat_id in ADMIN_IDS:
+        # check sudah ada belum namanya
+        with db_session:
+            nama = get(s for s in Santri if s.nama == message)
+            if nama:
+                update.message.reply_text("Silahkan masukkan nama yang lainnya. {} sudah ada".format(message))
+                return TAMBAH_NAMA_SANTRI
+
         CONTEXT[chat_id] = {'santri': {'nama': message}}
         update.message.reply_text("Data yang kamu masukkan:\nNama Santri: %s"%(CONTEXT[chat_id]['santri']['nama']),
             reply_markup=ReplyKeyboardMarkup(reply_persetujuan,
@@ -113,7 +123,10 @@ def process_persetujuan_save_santri(bot, update):
     if chat_id in ADMIN_IDS:
         if message == "✔ Simpan":
             data_nama = CONTEXT[chat_id]['santri']['nama']
-            # menyimpan nama 
+            # menyimpan nama
+            with db_session:
+                Santri(nama=data_nama)
+                commit()
 
             update.message.reply_text("Santri dengan nama *%s* berhasil"
                                       " disimpan kedatabase" %(data_nama),
@@ -146,7 +159,14 @@ def process_cari_nama_santri(bot, update):
 
     if chat_id in ADMIN_IDS:
         # cari nama , santri adalah object dari pencarian
+        with db_session:
+            nama = get(s for s in Santri if s.nama == message)
 
+            if not nama:
+                update.message.reply_text("Maaf, {} yang kamu cari tidak ditemukan "
+                    "Silahkan masukkan pencarian lain".format(message))
+                return CARI_NAMA_SANTRI
+ 
         CONTEXT[chat_id] = {'setoran': {'santri': message}}
 
         update.message.reply_text("Berikutnya, masukkan start, nosurat/ayat\n"
@@ -241,7 +261,7 @@ def process_lulus_setor(bot, update):
     message = update.message.text 
     chat_id = update.message.chat_id 
 
-    pilihan  = {'👍 Lulus': True,
+    pilihan = {'👍 Lulus': True,
                 '👎 Ulang Lagi': False}
 
     
@@ -259,6 +279,7 @@ def process_lulus_setor(bot, update):
             """
 
             context = CONTEXT[chat_id]['setoran']
+            context['timestamp'] = datetime.now()
 
             update.message.reply_text(text.format(nama=context['santri'],
                                                   setoran=context['start'] + "-" + context['end'],
@@ -278,6 +299,7 @@ def process_lulus_setor(bot, update):
     else:
         update.massage.reply_text("⛔⛔⛔ Maaf, anda tidak terdaftar ⛔⛔⛔")
 
+@db_session
 def process_persetujuan_setor(bot, update):
     message = update.message.text 
     chat_id = update.message.chat_id
@@ -287,6 +309,11 @@ def process_persetujuan_setor(bot, update):
     if chat_id in ADMIN_IDS:
         if message == "✔ Simpan":
             # process simpan
+            # with db_session:
+            nama = get(s for s in Santri if s.nama == data_setoran['santri'])
+            data_setoran['santri'] = nama
+            Setoran(**data_setoran)
+            commit()
 
             update.message.reply_text("Data yang anda masukkan telah kami simpan",
                 reply_markup=ReplyKeyboardMarkup(reply_start,
