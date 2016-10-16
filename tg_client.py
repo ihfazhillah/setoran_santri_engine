@@ -12,6 +12,7 @@ from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters, Rege
 from setoran_models import *
 from db_config import db
 from datetime import datetime
+from query_setoran import get_sudah_free
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -345,6 +346,57 @@ def process_persetujuan_setor(bot, update):
     else:
         update.massage.reply_text("⛔⛔⛔ Maaf, anda tidak terdaftar ⛔⛔⛔")
 
+@db_session
+def process_lihat(bot, update):
+    message = update.message.text 
+    chat_id = update.message.chat_id
+
+    if chat_id in ADMIN_IDS:
+        if message.text == "📃 Daftar Santri":
+            santri = select(s for s in Santri)
+            body = "DAFTAR SANTRI\n"
+            body += "Jumlah Santri terdaftar %s" %(count(santri))
+            body += "\n\n"
+            santri_text = "{nama}({jml_setoran})"
+            santri_ = [santri_text.format(nama=s.nama, jml_setoran=count(s.setorans)) for s in santri]
+            body += "\n".join(santri_)
+            update.message.reply_text(body,
+                reply_markup=ReplyKeyboardMarkup(reply_start,
+                    one_time_keyboard=True,
+                    resize_keyboard=True))
+            return START
+
+        elif message.text == "📚 Daftar Surat":
+            update.message.reply_text("Not implemented",
+                reply_markup=ReplyKeyboardMarkup(reply_start,
+                    one_time_keyboard=True,
+                    resize_keyboard=True))
+            return START
+        elif message.text == "👏 Free":
+            santri = get_sudah_free()
+            body = "DAFTAR SANTRI TANPA TANGGUNGAN\n"
+            body += "sudah setoran dan lulus\n"
+            body += "baik murojaah maupun tambah\n"
+            santri_ = ["{nama}({jml_setoran})".format(nama=s.nama, jml_setoran=count(s.setorans)) for s in santri]
+            body += "\n".join(santri_)
+
+            update.message.reply_text(body,
+                reply_markup=ReplyKeyboardMarkup(reply_start,
+                    one_time_keyboard=True,
+                    resize_keyboard=True))
+            return START 
+
+        elif message.text == "⛔ Belum":
+            update.message.reply_text("Not implemented",
+                reply_markup=ReplyKeyboardMarkup(reply_start,
+                    one_time_keyboard=True,
+                    resize_keyboard=True))
+            return START
+        else:
+            update.message.reply_text("Maaf, kami tidak tahu apa yang kamu mau...!!")
+            return START
+    else:
+        update.message.reply_text("⛔⛔⛔ Maaf, anda tidak terdaftar ⛔⛔⛔")
 
 def cancel(bot, update):
     update.message.reply_text("Operasi dihentikan",
