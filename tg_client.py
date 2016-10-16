@@ -21,7 +21,7 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 logger = logging.getLogger(__name__)
 
 # STATES
-START, START_PROCESS, LIHAT, TAMBAH, TAMBAH_NAMA_SANTRI, PERSETUJUAN_SAVE_SANTRI, CARI_NAMA_SANTRI, PROCESS_END, PROCESS_JENIS, PROCESS_LULUS, PROCESS_PERSETUJUAN_SETORAN, PROCESS_START = range(12)
+START, START_PROCESS, LIHAT, TAMBAH, TAMBAH_NAMA_SANTRI, PERSETUJUAN_SAVE_SANTRI, CARI_NAMA_SANTRI, PROCESS_END, PROCESS_JENIS, PROCESS_LULUS, PROCESS_PERSETUJUAN_SETORAN, PROCESS_START, PROCESS_LIHAT = range(13)
 
 # CONSTANS
 ADMIN_IDS = admin_ids
@@ -64,7 +64,7 @@ def process_start(bot, update):
             return TAMBAH
 
         elif message == "👀 Lihat":
-            update.message.reply_text("",
+            update.message.reply_text("mau lihat apa?",
                 reply_markup=ReplyKeyboardMarkup(reply_lihat,
                     one_time_keyboard=True,
                     resize_keyboard=True))
@@ -346,13 +346,26 @@ def process_persetujuan_setor(bot, update):
     else:
         update.massage.reply_text("⛔⛔⛔ Maaf, anda tidak terdaftar ⛔⛔⛔")
 
+
+def lihat(bot, update):
+    message = update.message
+
+    if message.chat_id in ADMIN_IDS:
+        update.message.reply_text("Mau lihat apa ???",
+            reply_markup=ReplyKeyboardMarkup(reply_lihat,
+                one_time_keyboard=True,
+                resize_keyboard=True))
+        return PROCESS_LIHAT
+    else:
+        update.massage.reply_text("⛔⛔⛔ Maaf, anda tidak terdaftar ⛔⛔⛔")
+
 @db_session
 def process_lihat(bot, update):
     message = update.message.text 
     chat_id = update.message.chat_id
 
     if chat_id in ADMIN_IDS:
-        if message.text == "📃 Daftar Santri":
+        if message == "📃 Daftar Santri":
             santri = select(s for s in Santri)
             body = "DAFTAR SANTRI\n"
             body += "Jumlah Santri terdaftar %s" %(count(santri))
@@ -366,18 +379,18 @@ def process_lihat(bot, update):
                     resize_keyboard=True))
             return START
 
-        elif message.text == "📚 Daftar Surat":
+        elif message == "📚 Daftar Surat":
             update.message.reply_text("Not implemented",
                 reply_markup=ReplyKeyboardMarkup(reply_start,
                     one_time_keyboard=True,
                     resize_keyboard=True))
             return START
-        elif message.text == "👏 Free":
+        elif message == "👏 Free":
             santri = get_sudah_free()
             body = "DAFTAR SANTRI TANPA TANGGUNGAN\n"
             body += "sudah setoran dan lulus\n"
             body += "baik murojaah maupun tambah\n"
-            santri_ = ["{nama}({jml_setoran})".format(nama=s.nama, jml_setoran=count(s.setorans)) for s in santri]
+            santri_ = ["{nama}({jml_setoran})".format(nama=s.nama, jml_setoran=count(s.setorans)) for s in santri] or ['Tidak ditemukan']
             body += "\n".join(santri_)
 
             update.message.reply_text(body,
@@ -386,7 +399,7 @@ def process_lihat(bot, update):
                     resize_keyboard=True))
             return START 
 
-        elif message.text == "⛔ Belum":
+        elif message == "⛔ Belum":
             update.message.reply_text("Not implemented",
                 reply_markup=ReplyKeyboardMarkup(reply_start,
                     one_time_keyboard=True,
@@ -403,7 +416,10 @@ def cancel(bot, update):
         reply_markup=ReplyKeyboardMarkup(reply_start,
             one_time_keyboard=True,
             resize_keyboard=True))
-    return START        
+    return START       
+
+def error(bot, update, error):
+    print(error) 
 
 def main():
     # Create the EventHandler and pass it your bot's token.
@@ -428,6 +444,7 @@ def main():
                 PROCESS_LULUS: [MessageHandler([Filters.text], process_lulus_setor)],
                 PROCESS_PERSETUJUAN_SETORAN: [MessageHandler([Filters.text], process_persetujuan_setor)],
                 START: [MessageHandler([Filters.text], process_start)],
+                LIHAT: [MessageHandler([Filters.text], process_lihat)],
 
 
         },
@@ -439,6 +456,7 @@ def main():
     dp.add_handler(conv_handler)
 
     # log all errors
+    dp.add_error_handler(error)
     
 
     # Start the Bot
