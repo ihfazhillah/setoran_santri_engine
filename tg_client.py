@@ -12,7 +12,7 @@ from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters, Rege
 from setoran_models import *
 from db_config import db
 from datetime import datetime
-from query_setoran import get_sudah_free, get_belum_setor
+from query_setoran import get_sudah_free, get_belum_setor, get_belum_murojaah
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -433,7 +433,18 @@ def process_belum(bot, update):
 
             return START
         elif message == "♻ Murojaah":
-            pass
+            santri = get_belum_murojaah()
+            body = "Daftar santri belum murojaah (%s)" %count(santri)
+            body += "\n\n"
+            santri_ = [s.nama for s in santri]
+            body += "\n".join(santri_)
+            body += "\n"
+
+            update.message.reply_text(body,
+                reply_markup=ReplyKeyboardMarkup(reply_start,
+                    one_time_keyboard=True,
+                    resize_keyboard=True))
+            return START
         elif message == "➕ Tambah Baru":
             pass
         elif message == "Murojaah sudah, harus ulang":
