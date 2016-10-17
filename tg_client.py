@@ -3,17 +3,18 @@
 """Telegram client untuk interaksi dengan setoran_santri_engine"""
 
 
-import os
+
 import logging
+from datetime import datetime
 from telegram import KeyboardButton, ReplyKeyboardMarkup
 from tg_config import tg_token, admin_ids
 from setoran_models import check_startend_format
 from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters, RegexHandler, ConversationHandler)
 from setoran_models import *
 from db_config import db
-from datetime import datetime
-from query_setoran import get_sudah_free, get_belum_setor, get_belum_murojaah
-
+from query_setoran import (get_sudah_free, get_belum_setor, get_belum_murojaah,
+get_sudah_murojaah_harus_ulang, get_sudah_tambah_harus_ulang, get_belum_tambah
+)
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.DEBUG)
@@ -446,11 +447,45 @@ def process_belum(bot, update):
                     resize_keyboard=True))
             return START
         elif message == "➕ Tambah Baru":
-            pass
+            santri = get_belum_tambah()
+            body = "Daftar santri belum tambah (%s)" %count(santri)
+            body += "\n\n"
+            body += "\n".join(s.nama for s in santri)
+            body += "\n"
+
+            update.message.reply_text(body,
+                reply_markup=ReplyKeyboardMarkup(reply_start,
+                    one_time_keyboard=True,
+                    resize_keyboard=True))
+
+            return START
+
         elif message == "Murojaah sudah, harus ulang":
-            pass
+            santri = get_sudah_murojaah_harus_ulang()
+            body = "Daftar santri sudah murojaah belum lancar (%s)" %count(santri)
+            body += "\n\n"
+            body += "\n".join(s.name for s in santri)
+            body += "\n"
+
+            update.message.reply_text(body,
+                reply_markup=ReplyKeyboardMarkup(reply_start,
+                    one_time_keyboard=True,
+                    resize_keyboard=True))
+
+            return START
         elif message == "Tambah sudah, harus ulang":
-            pass 
+            santri = get_sudah_tambah_harus_ulang()
+            body = "Daftar santri sudah tambah belum lancar (%s)" %count(santri)
+            body += "\n\n"
+            body += "\n".join(s.nama for s in santri)
+            body += "\n"
+
+            update.message.reply_text(body,
+                reply_markup=ReplyKeyboardMarkup(reply_start,
+                    one_time_keyboard=True,
+                    resize_keyboard=True))
+
+            return START
         else:
             update.message.reply_text("Maaf, kami tidak tahu apa yang kamu mau...!!")
             return START
