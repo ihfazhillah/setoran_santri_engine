@@ -12,7 +12,7 @@ from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters, Rege
 from setoran_models import *
 from db_config import db
 from datetime import datetime
-from query_setoran import get_sudah_free
+from query_setoran import get_sudah_free, get_belum_setor
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -21,7 +21,7 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 logger = logging.getLogger(__name__)
 
 # STATES
-START, START_PROCESS, LIHAT, TAMBAH, TAMBAH_NAMA_SANTRI, PERSETUJUAN_SAVE_SANTRI, CARI_NAMA_SANTRI, PROCESS_END, PROCESS_JENIS, PROCESS_LULUS, PROCESS_PERSETUJUAN_SETORAN, PROCESS_START, PROCESS_LIHAT = range(13)
+START, START_PROCESS, LIHAT, TAMBAH, TAMBAH_NAMA_SANTRI, PERSETUJUAN_SAVE_SANTRI, CARI_NAMA_SANTRI, PROCESS_END, PROCESS_JENIS, PROCESS_LULUS, PROCESS_PERSETUJUAN_SETORAN, PROCESS_START, PROCESS_LIHAT, BELUM = range(14)
 
 # CONSTANS
 ADMIN_IDS = admin_ids
@@ -400,16 +400,52 @@ def process_lihat(bot, update):
             return START 
 
         elif message == "⛔ Belum":
-            update.message.reply_text("Not implemented",
-                reply_markup=ReplyKeyboardMarkup(reply_start,
+            update.message.reply_text("Belum apa ??",
+                reply_markup=ReplyKeyboardMarkup(reply_belum,
                     one_time_keyboard=True,
                     resize_keyboard=True))
-            return START
+            return BELUM
         else:
             update.message.reply_text("Maaf, kami tidak tahu apa yang kamu mau...!!")
             return START
     else:
         update.message.reply_text("⛔⛔⛔ Maaf, anda tidak terdaftar ⛔⛔⛔")
+
+@db_session
+def process_belum(bot, update):
+
+    message = update.message.text 
+    chat_id = update.message.chat_id
+
+    if chat_id in ADMIN_IDS:
+        if message == "Setoran":
+            santri = get_belum_setor()
+            body = "Daftar Santri belum setor (%s)" %count(santri)
+            body += "\n\n"
+            santri_ = [s.nama for s in santri]
+            body += "\n".join(santri_)
+            body += "\n"
+
+            update.message.reply_text(body, 
+                reply_markup=ReplyKeyboardMarkup(reply_start,
+                    one_time_keyboard=True,
+                    resize_keyboard=True))
+
+            return START
+        elif message == "♻ Murojaah":
+            pass
+        elif message == "➕ Tambah Baru":
+            pass
+        elif message == "Murojaah sudah, harus ulang":
+            pass
+        elif message == "Tambah sudah, harus ulang":
+            pass 
+        else:
+            update.message.reply_text("Maaf, kami tidak tahu apa yang kamu mau...!!")
+            return START
+    else:
+        update.message.reply_text("⛔⛔⛔ Maaf, anda tidak terdaftar ⛔⛔⛔")
+
 
 def cancel(bot, update):
     update.message.reply_text("Operasi dihentikan",
@@ -445,6 +481,7 @@ def main():
                 PROCESS_PERSETUJUAN_SETORAN: [MessageHandler([Filters.text], process_persetujuan_setor)],
                 START: [MessageHandler([Filters.text], process_start)],
                 LIHAT: [MessageHandler([Filters.text], process_lihat)],
+                BELUM: [MessageHandler([Filters.text], process_belum)],
 
 
         },
