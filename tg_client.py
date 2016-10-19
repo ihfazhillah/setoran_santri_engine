@@ -77,7 +77,7 @@ def process_start(bot, update):
     else:
         update.message.reply_text("⛔⛔⛔ Maaf, anda tidak terdaftar ⛔⛔⛔")
 
-
+@db_session
 def process_tambah(bot, update):
     if update.message.chat_id in ADMIN_IDS:
         message = update.message.text
@@ -87,7 +87,13 @@ def process_tambah(bot, update):
             return TAMBAH_NAMA_SANTRI
 
         elif message == 'Setoran':
-            update.message.reply_text("Silahkan masukkan nama santri yang setoran")
+            santri = select(s.nama for s in Santri)
+
+            reply_daftar_santri = [[KeyboardButton(s)] for s in santri]
+
+            update.message.reply_text("Silahkan masukkan nama santri yang setoran", reply_markup=ReplyKeyboardMarkup(reply_daftar_santri,
+                one_time_keyboard=True,
+                resize_keyboard=True))
             return CARI_NAMA_SANTRI
         else:
             update.message.reply_text("Saya tidak faham pesan anda")
@@ -162,6 +168,9 @@ def process_cari_nama_santri(bot, update):
     if chat_id in ADMIN_IDS:
         # cari nama , santri adalah object dari pencarian
         with db_session:
+            if message.startswith("/"):
+                message.replace("/", "")
+
             nama = get(s for s in Santri if s.nama == message)
 
             if not nama:
@@ -317,7 +326,18 @@ def process_persetujuan_setor(bot, update):
             Setoran(**data_setoran)
             commit()
 
-            update.message.reply_text("Data yang anda masukkan telah kami simpan",
+            belum_setor = get_belum_setor()
+            sudah_setor = select(santri for santri in Santri if santri not in belum_setor)
+
+            reply = "Summary data setoran\n\n"
+            reply += "Sudah setor: \n"
+            reply += "\n".join(s.nama for s in sudah_setor)
+            reply += "\n\n\n"
+            reply += "Belum setor: \n"
+            reply += "\n".join(s.nama for s in belum_setor)
+
+
+            update.message.reply_text("Data yang anda masukkan telah kami simpan\n" + reply,
                 reply_markup=ReplyKeyboardMarkup(reply_start,
                     one_time_keyboard=True,
                     resize_keyboard=True))
