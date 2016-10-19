@@ -464,7 +464,7 @@ def process_belum(bot, update):
             santri = get_sudah_murojaah_harus_ulang()
             body = "Daftar santri sudah murojaah belum lancar (%s)" %count(santri)
             body += "\n\n"
-            body += "\n".join(s.name for s in santri)
+            body += "\n".join(s.nama for s in santri)
             body += "\n"
 
             update.message.reply_text(body,
