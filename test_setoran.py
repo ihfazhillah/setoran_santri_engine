@@ -127,12 +127,15 @@ class SetoranTest(unittest.TestCase):
 
         result adalah hanya santri yang belum setor hari ini..."""
         raffi = get(santri for santri in Santri if santri.nama == 'raffi')
+        iqbal = get(santri for santri in Santri if santri.nama == 'iqbal')
         now = datetime.now()
         yesterday = now - timedelta(days=1)
         Setoran(start='1/1', end='1/3', jenis='tambah', lulus=True, timestamp=yesterday, santri=raffi)
         Setoran(start='1/1', end='1/3', jenis='murojaah', lulus=True, timestamp=yesterday, santri=raffi)
+        Setoran(start='1/1', end='1/2', jenis='tambah', lulus=False, timestamp=datetime.now(), santri=iqbal)
+        Santri(nama='ihfazh')
         blm = get_belum_setor()
-        self.assertEqual(count(blm), 1)
+        self.assertEqual(count(blm), 2)
         self.assertIn('raffi', [santri.nama for santri in blm])
 
     @db_session
