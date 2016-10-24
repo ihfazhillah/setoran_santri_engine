@@ -11,7 +11,7 @@ from tg_config import tg_token, admin_ids
 from setoran_models import check_startend_format
 from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters, RegexHandler, ConversationHandler)
 from setoran_models import *
-from db_config import db
+from db_config import setoran_beneran
 from query_setoran import (get_sudah_free, get_belum_setor, get_belum_murojaah,
 get_sudah_murojaah_harus_ulang, get_sudah_tambah_harus_ulang, get_belum_tambah
 )
@@ -20,6 +20,8 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
                     level=logging.DEBUG)
 
 logger = logging.getLogger(__name__)
+
+db = setoran_beneran()
 
 # STATES
 START, START_PROCESS, LIHAT, TAMBAH, TAMBAH_NAMA_SANTRI, PERSETUJUAN_SAVE_SANTRI, CARI_NAMA_SANTRI, PROCESS_END, PROCESS_JENIS, PROCESS_LULUS, PROCESS_PERSETUJUAN_SETORAN, PROCESS_START, PROCESS_LIHAT, BELUM = range(14)
