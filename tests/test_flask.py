@@ -25,6 +25,7 @@ class MyTest(TestCase):
         db.drop_all_tables(with_all_data=True)
         os.remove("testing.sqlite")
 
+    @db_session
     def test_index_has_context(self):
         """testing index, has this context:
                 - sudah_setor
@@ -35,4 +36,10 @@ class MyTest(TestCase):
         sudah_setor = self.get_context_variable("sudah_setor")
         belum_setor = self.get_context_variable("belum_setor")
         setoran = self.get_context_variable("setoran")
-        self.assertEqual(sudah_setor, "")
+        belum_setor_from_db = get_belum_setor()
+        sudah_setor_from_db = select(s for s in Santri if s not in belum_setor_from_db)
+        setoran_from_db = select(s for s in Setoran).order_by(desc(Setoran.timestamp))[:5]
+        self.assertEqual(list(belum_setor), list(belum_setor_from_db))
+        self.assertEqual(list(sudah_setor), list(sudah_setor_from_db))
+        self.assertEqual(list(setoran), list(setoran_from_db))
+
