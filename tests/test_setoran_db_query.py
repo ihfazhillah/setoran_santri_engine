@@ -26,7 +26,7 @@ class SetoranTest(unittest.TestCase):
 
     def tearDown(self):
         db.drop_all_tables(with_all_data=True)
-        os.remove("testing.sqlite")
+        os.remove("tests/testing.sqlite")
 
     def test_start_end_format(self):
         """start or end harus berupa string, tapi dengan format 
