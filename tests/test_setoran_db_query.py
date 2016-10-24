@@ -4,9 +4,13 @@ import unittest
 from datetime import timedelta
 from query_setoran import get_belum_setor, get_belum_murojaah, get_belum_tambah, get_sudah_tambah_harus_ulang, get_sudah_murojaah_harus_ulang, get_sudah_free
 from setoran_models import *
+from db_config import testing_binding
 
-db.bind("sqlite", "testing.sqlite", create_db=True)
-db.generate_mapping(create_tables=True)
+
+db = testing_binding()
+
+
+
 class SetoranTest(unittest.TestCase):
 
     def assertListIn(self, expected_list, test_list):
@@ -26,7 +30,7 @@ class SetoranTest(unittest.TestCase):
 
     def tearDown(self):
         db.drop_all_tables(with_all_data=True)
-        os.remove("tests/testing.sqlite")
+        os.remove("testing.sqlite")
 
     def test_start_end_format(self):
         """start or end harus berupa string, tapi dengan format 
