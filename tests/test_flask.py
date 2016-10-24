@@ -43,3 +43,35 @@ class MyTest(TestCase):
         self.assertEqual(list(sudah_setor), list(sudah_setor_from_db))
         self.assertEqual(list(setoran), list(setoran_from_db))
 
+
+    @db_session
+    def test_display_santri_id_one(self):
+        """
+        untuk sementara hanya menampilkan setoran santri yang berkaitan
+
+            var :
+                - setoran
+        """
+        self.client.get("/santri/display/1")
+        setoran = self.get_context_variable("setoran")
+        santri = self.get_context_variable("santri")
+        setoran_from_db = select(s for s in Setoran if s.santri is santri)
+        self.assertEqual(list(setoran), list(setoran_from_db))
+        self.assertEqual(santri.nama, 'raffi')
+        self.assertEqual(setoran.count(), 0)
+
+    @db_session
+    def test_display_santri_id_two(self):
+        """
+        sama seperti diatas, tapi hanya mengecek id 2
+        """
+
+        self.client.get("/santri/display/2")
+        setoran = self.get_context_variable("setoran")
+        santri = self.get_context_variable("santri")
+        setoran_from_db = select(s for s in Setoran if s.santri is santri)
+        self.assertEqual(setoran.count(), 1)
+        self.assertEqual(santri.nama, "suryadi")
+        self.assertEqual(list(setoran), list(setoran_from_db))
+
+
