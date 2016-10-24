@@ -4,10 +4,8 @@ import unittest
 from datetime import timedelta
 from query_setoran import get_belum_setor, get_belum_murojaah, get_belum_tambah, get_sudah_tambah_harus_ulang, get_sudah_murojaah_harus_ulang, get_sudah_free
 from setoran_models import *
-from db_config import testing_binding
 
 
-db = testing_binding()
 
 
 
