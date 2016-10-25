@@ -174,7 +174,6 @@ def process_cari_nama_santri(bot, update):
                 message.replace("/", "")
 
             nama = get(s for s in Santri if s.nama == message)
-
             if not nama:
                 update.message.reply_text("Maaf, {} yang kamu cari tidak ditemukan "
                     "Silahkan masukkan pencarian lain".format(message))
