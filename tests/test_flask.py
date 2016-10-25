@@ -102,4 +102,12 @@ class MyTest(TestCase):
         self.assert_200(resp)
         self.assert_template_used("auth/login.html")        
 
+    def test_aut_login_page_with_incorrect_password(self):
+        resp = self.client.post("/auth/login",
+                                data={'username': 'username',
+                                      'password': 'wrong_password'})
+        self.assert_message_flashed("Wrong username or password.", "warning")
+        self.assert200(resp)
+        self.assert_template_used("auth/login.html")
+
 
