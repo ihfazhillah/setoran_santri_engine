@@ -1,5 +1,5 @@
 from flask import Blueprint, redirect, flash, render_template, request, url_for
-from flask_login import login_user 
+from flask_login import login_user, login_required 
 from .forms import LoginForm
 from .helpers import User
 
@@ -28,3 +28,9 @@ def login():
 
     return render_template("auth/login.html",
                            login_form=login_form)
+
+
+@mod.route("/logout")
+@login_required
+def logout():
+    pass
