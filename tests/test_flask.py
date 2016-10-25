@@ -1,5 +1,6 @@
 import os
 from flask_testing import TestCase
+from flask import current_app
 from create_app import create_app
 from query_setoran import get_belum_setor
 from setoran_models import *
@@ -85,6 +86,13 @@ class MyTest(TestCase):
         self.assertEqual(password.name, 'password')
         self.assertEqual(password.type, 'PasswordField')
         self.assertTrue(all(login_form.data[x] is None for x in login_form.data))
+
+    def test_auth_login_page_with_post(self):
+        resp = self.client.post("/auth/login", 
+                                data={'username': 'username',
+                                      'password': 'password'})
+        self.assert_redirects(resp, "/")
+        self.assert_message_flashed("Login Success")
         
 
 
