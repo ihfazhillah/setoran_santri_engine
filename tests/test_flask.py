@@ -74,4 +74,17 @@ class MyTest(TestCase):
         self.assertEqual(santri.nama, "suryadi")
         self.assertEqual(list(setoran), list(setoran_from_db))
 
+    def test_auth_login_page(self):
+        resp = self.client.get("/auth/login")
+        self.assert200(resp, "login page not found")
+        login_form = self.get_context_variable('login_form')
+        username = login_form.username
+        password = login_form.password
+        self.assertEqual(username.name, 'username')
+        self.assertEqual(username.type, 'StringField')
+        self.assertEqual(password.name, 'password')
+        self.assertEqual(password.type, 'PasswordField')
+        self.assertTrue(all(login_form.data[x] is None for x in login_form.data))
+        
+
 
