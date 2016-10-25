@@ -11,6 +11,9 @@ def create_app(config_filename):
     from webmodules.auth.helpers import User
 
     lm = LoginManager(app)
+    lm.login_view = "auth.login"
+    lm.login_message = "You're not logged in"
+    lm.login_message_category = "warning"
 
     @lm.user_loader
     def load_user(username):
