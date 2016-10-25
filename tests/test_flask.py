@@ -93,6 +93,13 @@ class MyTest(TestCase):
                                       'password': 'password'})
         self.assert_redirects(resp, "/")
         self.assert_message_flashed("Login Success")
-        
+
+    def test_auth_login_page_with_wrong_credential(self):
+        resp = self.client.post("/auth/login",
+                                data={'username': 'wrong_username',
+                                      'password': 'wrong_password'})
+        self.assert_message_flashed("Wrong username or password.", "warning")
+        self.assert_200(resp)
+        self.assert_template_used("auth/login.html")        
 
 
