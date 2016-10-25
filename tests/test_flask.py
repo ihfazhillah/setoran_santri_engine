@@ -110,4 +110,9 @@ class MyTest(TestCase):
         self.assert200(resp)
         self.assert_template_used("auth/login.html")
 
+    def test_auth_logout_without_login(self):
+        resp = self.client.get("/auth/logout")
+        self.assert_redirects(resp, "/auth/login?next=%2Fauth%2Flogout")
+        self.assert_message_flashed("You're not logged in", "warning")
+
 
