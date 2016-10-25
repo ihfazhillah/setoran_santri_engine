@@ -22,6 +22,9 @@ def login():
                 flash("Login Success")
                 return redirect(url_for("front_page.index"))
 
+            flash("Wrong username or password.", "warning")
+            
+
 
     return render_template("auth/login.html",
                            login_form=login_form)
