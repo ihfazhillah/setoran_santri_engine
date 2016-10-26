@@ -8,7 +8,7 @@ def create_app(config_filename):
     app.config.from_object(config_filename)
 
     from flask_login import LoginManager
-    from webmodules.auth.helpers import User
+    from webmodules.auth.helpers import User, USERS
 
     lm = LoginManager(app)
     lm.login_view = "auth.login"
@@ -16,8 +16,10 @@ def create_app(config_filename):
     lm.login_message_category = "warning"
 
     @lm.user_loader
-    def load_user(username):
-        User.get(username)
+    def load_user(userid):
+        for user in USERS:
+            if user.id == int(userid):
+                return user
 
     from webmodules.index.routes import mod as front_page_mod
     from webmodules.santri.routes import mod as santri_mod
