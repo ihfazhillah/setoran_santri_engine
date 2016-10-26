@@ -1,3 +1,5 @@
 __pycache__/
 *.pyc
 setoran.sqlite
+coba_flask_admin.py
+flask_app.py

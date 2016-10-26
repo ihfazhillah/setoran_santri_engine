@@ -1,30 +1,14 @@
-from flask import current_app
+from flask_login import UserMixin
+from flask_credentials import users
 
 
-class User(object):
+class User(UserMixin):
 
-    def __init__(self, username, password):
+    def __init__(self, id_, username, password):
         self.username = username 
         self.password = password
+        self.id = id_
 
-    @classmethod
-    def get(cls, username):
-        return current_app.config['CREDENTIALS'].get('username')
 
-    @property 
-    def is_authenticated(self):
-        # try:
-        return current_app.config['CREDENTIALS'].get('username') == self.password
-        # except KeyError:
-            # return False
-
-    @property 
-    def is_active(self):
-        return self.is_authenticated 
-
-    @property 
-    def is_anonymous(self):
-        return False
-
-    def get_id(self):
-        return self.username
+USERS = [User(*x) for x in users]
+usernames = {u.username: u.id for u in USERS}

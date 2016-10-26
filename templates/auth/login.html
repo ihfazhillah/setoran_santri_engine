@@ -1,0 +1,8 @@
+<form action="{{ url_for('auth.login') }}" method="post">
+    {{ login_form.username }}
+    {{ login_form.password }}
+    <input type="submit" name="submit">
+</form>
+
+{% set messages = get_flashed_messages() %}
+{{ messages }}

@@ -1,7 +1,7 @@
 from flask import Blueprint, redirect, flash, render_template, request, url_for
-from flask_login import login_user, login_required 
+from flask_login import login_user, login_required, logout_user 
 from .forms import LoginForm
-from .helpers import User
+from .helpers import USERS, usernames
 
 mod = Blueprint("auth", __name__, template_folder="templates")
 
@@ -15,14 +15,22 @@ def login():
             username = login_form.username.data
             password = login_form.password.data
 
-            user = User(username, password)
+            if username in usernames:
+                user = USERS[usernames[username]]
 
-            if user.is_authenticated:
-                login_user(user)
-                flash("Login Success")
-                return redirect(url_for("front_page.index"))
+                if user.password == password:
 
-            flash("Wrong username or password.", "warning")
+
+                    login_user(user)
+                    flash("Login Success")
+                    return redirect(url_for("front_page.index"))
+                else:
+                    flash("Wrong username or password.", "warning")
+            
+            # if user.is_authenticated:
+            else:
+
+                flash("Wrong username or password.", "warning")
             
 
 
@@ -33,4 +41,6 @@ def login():
 @mod.route("/logout")
 @login_required
 def logout():
-    pass
+    logout_user()
+    flash("Logout success.")
+    return redirect(url_for("front_page.index"))

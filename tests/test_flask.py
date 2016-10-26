@@ -115,4 +115,12 @@ class MyTest(TestCase):
         self.assert_redirects(resp, "/auth/login?next=%2Fauth%2Flogout")
         self.assert_message_flashed("You're not logged in", "warning")
 
+    def test_auth_logout_with_login(self):
+        resp = self.client.post("/auth/login", data={'username': 'username',
+                                                     'password': 'password'})
+        self.assert_redirects(resp, "/")
+        resp = self.client.get("/auth/logout")
+        self.assert_message_flashed("Logout success.")
+        self.assert_redirects(resp, "/")
+
 
