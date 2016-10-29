@@ -135,3 +135,14 @@ class MyTest(TestCase):
         resp = self.client.get("/santri/delete/1")
         self.assert_redirects(resp, "/auth/login?next=%2Fsantri%2Fdelete%2F1")
         self.assert_message_flashed("You're not logged in", "warning")
+
+    def test_delete_santri_after_login(self):
+        self.login()
+        resp = self.client.get("/santri/delete/1")
+        self.assert_redirects(resp, "/")
+        self.assert_message_flashed("Santri with id 1 was removed.", "info")
+        with db_session:
+            santries = select(s for s in Santri)
+            self.assertEqual(santries.count(), 5)
+            self.assertNotIn("raffi", [s.nama for s in santries])
+
