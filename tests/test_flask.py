@@ -26,6 +26,18 @@ class MyTest(TestCase):
         db.drop_all_tables(with_all_data=True)
         os.remove("testing.sqlite")
 
+    def login(self):
+        resp = self.client.post("/auth/login", data={'username': 'username',
+                                                     'password': 'password'})
+        self.assert_redirects(resp, "/")
+
+    def logout(self):
+        resp = self.client.get("/auth/logout")
+        self.assert_message_flashed("Logout success.")
+        self.assert_redirects(resp, "/")
+
+
+
     @db_session
     def test_index_has_context(self):
         """testing index, has this context:
@@ -116,11 +128,9 @@ class MyTest(TestCase):
         self.assert_message_flashed("You're not logged in", "warning")
 
     def test_auth_logout_with_login(self):
-        resp = self.client.post("/auth/login", data={'username': 'username',
-                                                     'password': 'password'})
-        self.assert_redirects(resp, "/")
-        resp = self.client.get("/auth/logout")
-        self.assert_message_flashed("Logout success.")
-        self.assert_redirects(resp, "/")
+        self.login()
+        self.logout()
+
+
 
 
