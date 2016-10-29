@@ -131,6 +131,7 @@ class MyTest(TestCase):
         self.login()
         self.logout()
 
-
-
-
+    def test_delete_santri_without_login(self):
+        resp = self.client.get("/santri/delete/1")
+        self.assert_redirects(resp, "/auth/login?next=%2Fsantri%2Fdelete%2F1")
+        self.assert_message_flashed("You're not logged in", "warning")
