@@ -151,3 +151,15 @@ class MyTest(TestCase):
                                 data={"nama": "ihfazh"})
         self.assert_redirects(resp, "/auth/login?next=%2Fsantri%2Fedit%2F1")
         self.assert_message_flashed("You're not logged in", "warning")
+
+    def test_edit_santri_after_login(self):
+        self.login()
+        resp = self.client.post("/santri/edit/1", 
+                                data={"nama": "ihfazh"})
+        self.assert_redirects(resp, "/")
+        self.assert_message_flashed("Santri with id 1 was edited.", "info")
+        with db_session:
+            santri = select(s for s in Santri)
+            self.assertEqual(santri.count(), 6)
+            ihfazh = get(s for s in Santri if s.id == 1)
+            self.assertEqual(ihfazh.nama, "ihfazh")
