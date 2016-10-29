@@ -22,3 +22,8 @@ def delete(id_):
         santri.delete()
         flash("Santri with id %s was removed." %id_, 'info')
         return redirect(url_for("front_page.index"))
+
+@mod.route("/edit/<id_>", methods=["POST", "GET"])
+@login_required
+def edit(id_):
+    return ""

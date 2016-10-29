@@ -149,5 +149,5 @@ class MyTest(TestCase):
     def test_edit_santri_without_login(self):
         resp = self.client.post("/santri/edit/1", 
                                 data={"nama": "ihfazh"})
-        self.assert_redirects(resp, "/auth/login?next=/santri/edit/1")
+        self.assert_redirects(resp, "/auth/login?next=%2Fsantri%2Fedit%2F1")
         self.assert_message_flashed("You're not logged in", "warning")
