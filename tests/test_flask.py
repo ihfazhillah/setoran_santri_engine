@@ -198,4 +198,13 @@ class MyTest(TestCase):
             santries = select(s for s in Santri)
             self.assertEqual(santries.count(), 7)
             self.assertIn("fukaihah ihfazhillah", [s.nama for s in santries])
-            
+
+    def test_add_empty_santri_redirect_to_index_page(self):
+        self.login()
+        resp = self.client.post("/santri/add",
+                                data={"nama": ""})
+        self.assert_redirects(resp, "/")
+        self.assert_message_flashed("Can't add empty santri", "warning")
+
+        with db_session:
+            self.assertEqual(select(s for s in Santri).count(), 6)
