@@ -208,3 +208,5 @@ class MyTest(TestCase):
 
         with db_session:
             self.assertEqual(select(s for s in Santri).count(), 6)
+
+
