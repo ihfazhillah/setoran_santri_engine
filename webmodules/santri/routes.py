@@ -53,3 +53,6 @@ def add():
         flash("%s added." %nama, "info")
 
         return redirect(url_for("front_page.index"))
+
+    flash("Can't add empty santri", "warning")
+    return redirect(url_for("front_page.index"))
