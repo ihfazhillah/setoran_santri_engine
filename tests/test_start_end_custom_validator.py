@@ -27,3 +27,11 @@ class CustomValidatorTestCase(TestCase):
         self.assertTrue(self.setoran_form.start.validate(self.setoran_form))
         self.assertTrue(self.setoran_form.end.validate(self.setoran_form))
 
+    def test_start_end_cant_mix_between_number_and_string(self):
+        self.setoran_form.start.data = "sfja/123"
+        self.setoran_form.end.data = "111/efsa"
+
+        self.assertFalse(self.setoran_form.start.validate(self.setoran_form))
+        self.assertFalse(self.setoran_form.end.validate(self.setoran_form))
+
+
