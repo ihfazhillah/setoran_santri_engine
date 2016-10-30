@@ -8,7 +8,7 @@ mod = Blueprint("auth", __name__, template_folder="templates")
 
 @mod.route("/login", methods=['POST', 'GET'])
 def login():
-    login_form = LoginForm(csrf_enabled=False)
+    login_form = LoginForm()
 
     if request.method == 'POST':
         if login_form.validate_on_submit():
