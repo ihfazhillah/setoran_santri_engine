@@ -24,9 +24,11 @@ def create_app(config_filename):
     from webmodules.index.routes import mod as front_page_mod
     from webmodules.santri.routes import mod as santri_mod
     from webmodules.auth.routes import mod as auth_mod
+    from webmodules.setoran.routes import mod as setoran_mod 
 
     app.register_blueprint(front_page_mod)
     app.register_blueprint(santri_mod, url_prefix="/santri")
     app.register_blueprint(auth_mod, url_prefix="/auth")
+    app.register_blueprint(setoran_mod, url_prefix="/setoran")
 
     return app
