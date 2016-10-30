@@ -163,3 +163,14 @@ class MyTest(TestCase):
             self.assertEqual(santri.count(), 6)
             ihfazh = get(s for s in Santri if s.id == 1)
             self.assertEqual(ihfazh.nama, "ihfazh")
+
+    def test_edit_santri_and_empty_nama_field(self):
+        self.login()
+        resp = self.client.post("/santri/edit/1",
+                                data={'nama': ''})
+        self.assert_redirects(resp, "/")
+        with db_session:
+            santri = select(s for s in Santri)
+            self.assertEqual(santri.count(), 6)
+            raffi = get(s for s in Santri if s.id == 1)
+            self.assertEqual(raffi.nama, "raffi")
