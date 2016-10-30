@@ -18,3 +18,12 @@ class CustomValidatorTestCase(TestCase):
 
         self.assertFalse(self.setoran_form.start.validate(self.setoran_form))
         self.assertFalse(self.setoran_form.end.validate(self.setoran_form))
+
+    def test_start_end_must_number_separated_by_garing(self):
+        """garing == '/'"""
+        self.setoran_form.start.data = "1/2"
+        self.setoran_form.end.data = "1/2"
+
+        self.assertTrue(self.setoran_form.start.validate(self.setoran_form))
+        self.assertTrue(self.setoran_form.end.validate(self.setoran_form))
+
