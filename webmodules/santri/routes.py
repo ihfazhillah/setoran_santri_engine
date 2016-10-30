@@ -38,3 +38,8 @@ def edit(id_):
             return redirect(url_for("front_page.index"))
     flash("%s: %s" %(santri_form.nama.name, santri_form.nama.errors))
     return redirect(url_for("front_page.index"))
+
+@mod.route("/add", methods=["POST"])
+@login_required
+def add():
+    return ""
