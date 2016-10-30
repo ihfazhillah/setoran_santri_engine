@@ -184,3 +184,18 @@ class MyTest(TestCase):
         with db_session:
             self.assertEqual(select(s for s in Santri).count(), 6)
 
+
+    def test_add_santri_logged_user(self):
+        self.login()
+
+        resp = self.client.post("/santri/add",
+                                data={'nama': 'fukaihah ihfazhillah'})
+
+        self.assert_redirects(resp, "/")
+        self.assert_message_flashed("fukaihah ihfazhillah added.", "info")
+
+        with db_session:
+            santries = select(s for s in Santri)
+            self.assertEqual(santries.count(), 7)
+            self.assertIn("fukaihah ihfazhillah", [s.nama for s in santries])
+            
