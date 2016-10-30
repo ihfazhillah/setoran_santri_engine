@@ -36,3 +36,5 @@ def edit(id_):
             santri.nama = nama
             flash("Santri with id %s was edited." %id_, 'info')
             return redirect(url_for("front_page.index"))
+    flash("%s: %s" %(santri_form.nama.name, santri_form.nama.errors))
+    return redirect(url_for("front_page.index"))
