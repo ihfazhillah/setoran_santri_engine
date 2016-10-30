@@ -209,4 +209,10 @@ class MyTest(TestCase):
         with db_session:
             self.assertEqual(select(s for s in Santri).count(), 6)
 
+    def test_anonymous_user_delete_setoran(self):
+        resp = self.client.get("/setoran/delete/1")
+        self.assert_redirects(resp, "/auth/login?next=%2Fsetoran%2Fdelete%2F1")
+        self.assert_message_flashed("You're not logged in", "warning")
+
+
 
