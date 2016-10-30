@@ -174,3 +174,13 @@ class MyTest(TestCase):
             self.assertEqual(santri.count(), 6)
             raffi = get(s for s in Santri if s.id == 1)
             self.assertEqual(raffi.nama, "raffi")
+
+    def test_add_santri_without_login_redirect_to_login(self):
+        resp = self.client.post("/santri/add",
+                                data={"nama": "ini nama"})
+        self.assert_redirects(resp, "/auth/login?next=%2Fsantri%2Fadd")
+        self.assert_message_flashed("You're not logged in", "warning")
+
+        with db_session:
+            self.assertEqual(select(s for s in Santri).count(), 6)
+
