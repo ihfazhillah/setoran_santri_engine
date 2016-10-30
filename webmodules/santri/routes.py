@@ -42,4 +42,14 @@ def edit(id_):
 @mod.route("/add", methods=["POST"])
 @login_required
 def add():
-    return ""
+    santri_form = SantriForm()
+
+    if santri_form.validate_on_submit():
+        nama = santri_form.nama.data 
+
+        with db_session:
+            Santri(nama=nama)
+
+        flash("%s added." %nama, "info")
+
+        return redirect(url_for("front_page.index"))
