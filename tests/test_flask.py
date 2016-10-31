@@ -214,5 +214,13 @@ class MyTest(TestCase):
         self.assert_redirects(resp, "/auth/login?next=%2Fsetoran%2Fdelete%2F1")
         self.assert_message_flashed("You're not logged in", "warning")
 
+    def test_delete_setoran(self):
+        self.login()
+        resp = self.client.get("/setoran/delete/1")
+        self.assert_message_flashed("Setoran with id 1 from santri with id 6 was removed.", "info")
+        self.assert_redirects(resp, "/santri/display/6")
+
+        with db_session:
+            self.assertEqual(select(s for s in Setoran).count(), 5)
 
 
