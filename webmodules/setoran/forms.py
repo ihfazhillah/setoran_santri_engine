@@ -18,4 +18,4 @@ class SetoranForm(FlaskForm):
                        choices=[("murojaah", "Murojaah"),
                                 ("tambah", "Tambah")])
     lulus = RadioField(validators=[DataRequired()],
-                       choices=[(True, "Ya"), (False, "Tidak")])
+                       choices=[('1', "Ya"), ('0', "Tidak")])
