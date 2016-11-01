@@ -219,6 +219,25 @@ class MyTest(TestCase):
             self.assertEqual(select(s for s in Setoran).count(), 5)
 
     def test_edit_setoran_without_login(self):
-        resp = self.client.get("/setoran/edit/1")
+        resp = self.client.post("/setoran/edit/1")
         self.assert_redirects(resp, "/auth/login?next=%2Fsetoran%2Fedit%2F1")
         self.assert_message_flashed("You're not logged in", "warning")
+
+    @db_session
+    def test_edit_setoran(self):
+        self.login()
+        santri = get(s for s in Santri if s.id == 1)
+        data = dict(santri='1',
+                    start="1/1",
+                    end="1/1",
+                    jenis="tambah",
+                    lulus='1')
+        resp = self.client.post("/setoran/edit/1",
+                                data=data)
+        self.assert_message_flashed("Setoran with id 1 was modified.", "info")
+        self.assert_redirects(resp, "/santri/display/1")
+
+        self.assertEqual(select(s for s in Setoran).count(), 6)
+        self.assertEqual(santri.setorans.count(), 1)
+        enam = get(s for s in Santri if s.id == 6)
+        self.assertEqual(enam.setorans.count(), 1)
