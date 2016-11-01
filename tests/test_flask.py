@@ -217,3 +217,8 @@ class MyTest(TestCase):
 
         with db_session:
             self.assertEqual(select(s for s in Setoran).count(), 5)
+
+    def test_edit_setoran_without_login(self):
+        resp = self.client.get("/setoran/edit/1")
+        self.assert_redirects(resp, "/auth/login?next=%2Fsetoran%2Fedit%2F1")
+        self.assert_message_flashed("You're not logged in", "warning")
