@@ -1,6 +1,7 @@
 from flask import Blueprint, redirect, url_for, flash
 from flask_login import login_required
-from setoran_models import db_session, Setoran, get
+from setoran_models import Setoran
+from pony.orm import db_session, get
 
 
 mod = Blueprint("setoran", __name__,
