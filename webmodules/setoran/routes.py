@@ -20,3 +20,9 @@ def delete(id_):
               % (id_, santri.id), "info")
 
         return redirect(url_for("santri.display", id_=santri.id))
+
+
+@mod.route("/edit/<id_>")
+@login_required
+def edit(id_):
+    pass
