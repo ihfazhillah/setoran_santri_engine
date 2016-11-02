@@ -241,3 +241,10 @@ class MyTest(TestCase):
         self.assertEqual(santri.setorans.count(), 1)
         enam = get(s for s in Santri if s.id == 6)
         self.assertEqual(enam.setorans.count(), 1)
+
+    @db_session
+    def test_add_setoran_anonymous_user_should_redirect_to_login_page(self):
+        resp = self.client.post("/setoran/add",
+                                data={})
+        self.assert_redirects(resp, "/auth/login?next=%2Fsetoran%2Fadd")
+        self.assert_message_flashed("You're not logged in", "warning")
