@@ -46,3 +46,9 @@ def edit(id_):
 
         return redirect(url_for("santri.display", id_=santri.id))
     return setoran_form.errors
+
+
+@mod.route("/add", methods=['POST'])
+@login_required
+def add():
+    pass
