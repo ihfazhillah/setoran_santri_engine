@@ -1,5 +1,5 @@
 astroid==1.4.8
-certifi==2016.9.26
+certifi==2022.12.7
 future==0.15.2
 isort==4.2.5
 lazy-object-proxy==1.2.2
